@@ -16,9 +16,10 @@ import org.tinylog.kotlin.Logger
 import java.util.stream.IntStream
 
 object Dumper {
+  val logger = Logger.tag("FILE")
 
   fun pullData() {
-    val totalCount = QueryHelper.countQuery(EsDumpConfig.index, EsDumpConfig.query)
+    val totalCount = QueryHelper.countQuery(EsDumpConfig.index, null) //EsDumpConfig.query
     val progress = ProgressBar("Pull data", totalCount)
 
     val scrollIds: MutableSet<String> = mutableSetOf()
@@ -52,7 +53,7 @@ object Dumper {
 
       while (searchHits != null && searchHits.isNotEmpty()) {
         val scrollRequest = SearchScrollRequest(scrollId)
-        //Logger.tag("CONSOLE").info(it)
+        logger.info(it)
         scrollRequest.scroll(scroll)
 
         searchResponse = performSearchRequest(scrollRequest, progress)
@@ -70,7 +71,7 @@ object Dumper {
   }
 
   fun performSearchRequest(searchRequest: ActionRequest, progress: ProgressBar): SearchResponse {
-    var searchResponse: SearchResponse = SearchResponse()
+    var searchResponse = SearchResponse()
 
     when (searchRequest) {
       is SearchRequest -> {
@@ -87,7 +88,7 @@ object Dumper {
   }
 
   fun processHits(hits: Array<SearchHit>, progress: ProgressBar) {
-    //Logger.info(hits.contentToString())
+    logger.info(hits.contentToString())
     progress.stepBy(hits.size.toLong())
   }
 

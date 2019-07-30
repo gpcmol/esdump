@@ -21,7 +21,8 @@ object QueryHelper {
   }
 
   fun queryFromString(query: String?): SearchSourceBuilder {
-    val query = query ?: "{\"match_all\":{}}"
+    //val query = query ?: "{\"match_all\":{}}"
+    val query = "{\"match_all\":{}}"
     return SearchSourceBuilder().query(
       QueryBuilders.wrapperQuery(query)
     )

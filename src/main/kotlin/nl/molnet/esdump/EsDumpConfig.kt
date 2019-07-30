@@ -11,7 +11,7 @@ object EsDumpConfig {
   var slices: Int = 2
   var query = "{\"match_all\":{}}"
   var file = "/tmp/out.json"
-  var scrollSize: Int = 10000
+  var scrollSize: Int = 1000
   var scrollTtlMin = TimeValue.timeValueMinutes(1L)
   var fields: Array<String> = emptyArray()
 
@@ -33,7 +33,7 @@ object EsDumpConfig {
     }
 
     if (!query.isNullOrBlank()) {
-      this.query = query
+      this.query = query.substring(1, query.length - 1)
     }
 
     if (!file.isNullOrBlank()) {
