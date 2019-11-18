@@ -126,7 +126,7 @@ object Dumper {
   }
 
   val bulkProcessor = BulkProcessor.builder(
-    { request, bulkListener -> EsConnector.client.bulkAsync(request, RequestOptions.DEFAULT, bulkListener) },
+    { request, bulkListener -> EsConnector.targetClient.bulkAsync(request, RequestOptions.DEFAULT, bulkListener) },
     bulkListener)
     .setBulkActions(EsDumpConfig.bulk_actions)
     .setBulkSize(ByteSizeValue(EsDumpConfig.bulk_size_mb, ByteSizeUnit.MB))

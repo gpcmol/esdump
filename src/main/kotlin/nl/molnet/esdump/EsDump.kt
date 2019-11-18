@@ -13,7 +13,7 @@ fun main(args: Array<String>) = mainBody {
   StatusLogger.getLogger().level = Level.OFF
 
   ArgParser(args).parseInto(::Arguments).run {
-    EsDumpConfig.init(host, port, index, slices, file, query, window, ttlMin, fields, targetIndex, targetType)
+    EsDumpConfig.init(host, port, index, slices, file, query, window, ttlMin, fields, targetHost, targetPort, targetIndex, targetType)
 
     LogConfig.init()
 
@@ -27,6 +27,8 @@ fun main(args: Array<String>) = mainBody {
     logger.info("Fields: ${fields}")
     logger.info("Window: ${window}")
     logger.info("TtlMin: ${ttlMin}")
+    logger.info("TargetHost: ${targetHost}")
+    logger.info("TargetPort: ${targetPort}")
     logger.info("TargetIndex: ${targetIndex}")
     logger.info("TargetType: ${targetType}")
 

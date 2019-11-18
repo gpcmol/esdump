@@ -20,10 +20,12 @@ object EsDumpConfig {
   var scrollSize: Int = 1000
   var scrollTtlMin = TimeValue.timeValueMinutes(1L)
   var fields: Array<String> = emptyArray()
+  var targetHost = "localhost"
+  var targetPort: Int = 9200
   var targetIndex = ""
   var targetType = "_doc"
 
-  fun init(host: String?, port: String?, index: String?, slices: String?, file: String?, query: String?, scrollSize: String?, scrollTtlMin: String?, fields: String?, targetIndex: String?, targetType: String?) {
+  fun init(host: String?, port: String?, index: String?, slices: String?, file: String?, query: String?, scrollSize: String?, scrollTtlMin: String?, fields: String?, targetHost: String?, targetPort: String?, targetIndex: String?, targetType: String?) {
     if (!host.isNullOrBlank()) {
       this.host = host
     }
@@ -60,6 +62,14 @@ object EsDumpConfig {
       this.fields = fields.split(",").toTypedArray()
     } else {
       this.fields = Array(1) { "*" }
+    }
+
+    if (!targetHost.isNullOrBlank()) {
+      this.targetHost = targetHost
+    }
+
+    if (!targetPort.isNullOrBlank()) {
+      this.targetPort = targetPort.toInt()
     }
 
     if (!targetIndex.isNullOrBlank()) {

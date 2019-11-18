@@ -8,16 +8,23 @@ import org.elasticsearch.client.RestHighLevelClient
 object EsConnector {
 
   val client: RestHighLevelClient by lazy {
-    init()
+    init(EsDumpConfig.host, EsDumpConfig.port)
   }
 
-  fun init(): RestHighLevelClient {
-    return RestHighLevelClient(RestClient.builder(HttpHost(EsDumpConfig.host, EsDumpConfig.port, EsDumpConfig.schema)))
+  val targetClient: RestHighLevelClient by lazy {
+    init(EsDumpConfig.targetHost, EsDumpConfig.targetPort)
+  }
+
+  fun init(host: String = "localhost", port:Int = 9200): RestHighLevelClient {
+    return RestHighLevelClient(RestClient.builder(HttpHost(host, port, EsDumpConfig.schema)))
   }
 
   fun close() {
     if (client != null) {
       client.close()
+    }
+    if (targetClient != null) {
+      targetClient.close()
     }
   }
 
