@@ -13,28 +13,33 @@ fun main(args: Array<String>) = mainBody {
   StatusLogger.getLogger().level = Level.OFF
 
   ArgParser(args).parseInto(::Arguments).run {
-    EsDumpConfig.init(host, port, index, slices, file, query, window, ttlMin, fields)
+    EsDumpConfig.init(host, port, index, slices, file, query, window, ttlMin, fields, targetIndex, targetType)
 
     LogConfig.init()
 
     val logger = Logger.tag("CONSOLE")
-    logger.info("Host: ${host}!")
-    logger.info("Port: ${port}!")
-    logger.info("Index: ${index}!")
-    logger.info("Slices: ${slices}!")
-    logger.info("File: ${file}!")
-    logger.info("Query: ${query}!")
-    logger.info("Fields: ${fields}!")
-    logger.info("Window: ${window}!")
-    logger.info("TtlMin: ${ttlMin}!")
+    logger.info("Host: ${host}")
+    logger.info("Port: ${port}")
+    logger.info("Index: ${index}")
+    logger.info("Slices: ${slices}")
+    logger.info("File: ${file}")
+    logger.info("Query: ${query}")
+    logger.info("Fields: ${fields}")
+    logger.info("Window: ${window}")
+    logger.info("TtlMin: ${ttlMin}")
+    logger.info("TargetIndex: ${targetIndex}")
+    logger.info("TargetType: ${targetType}")
 
     try {
       Dumper.pullData()
+      logger.info("Wait for last flush...")
+      Thread.sleep((EsDumpConfig.bulk_flush_sec + 5) * 1000)
     } catch (e: Exception) {
       logger.error("error connecting to Elasticsearch " + e.message)
+      exitProcess(0)
     } finally {
       EsConnector.close()
-      exitProcess(0)
+      logger.info("Done")
     }
 
     return@run

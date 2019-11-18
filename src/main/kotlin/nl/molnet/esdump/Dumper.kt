@@ -4,10 +4,19 @@ import me.tongfei.progressbar.ProgressBar
 import nl.molnet.esdump.elastic.EsConnector
 import nl.molnet.esdump.elastic.QueryHelper
 import org.elasticsearch.action.ActionRequest
+import org.elasticsearch.action.bulk.BackoffPolicy
+import org.elasticsearch.action.bulk.BulkProcessor
+import org.elasticsearch.action.bulk.BulkRequest
+import org.elasticsearch.action.bulk.BulkResponse
+import org.elasticsearch.action.index.IndexRequest
 import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchScrollRequest
 import org.elasticsearch.client.RequestOptions
+import org.elasticsearch.common.unit.ByteSizeUnit
+import org.elasticsearch.common.unit.ByteSizeValue
+import org.elasticsearch.common.unit.TimeValue
+import org.elasticsearch.common.xcontent.XContentType
 import org.elasticsearch.search.Scroll
 import org.elasticsearch.search.SearchHit
 import org.elasticsearch.search.builder.SearchSourceBuilder
@@ -16,6 +25,7 @@ import org.tinylog.kotlin.Logger
 import java.util.stream.IntStream
 
 object Dumper {
+  val console = Logger.tag("CONSOLE")
   val logger = Logger.tag("FILE")
 
   fun pullData() {
@@ -66,8 +76,6 @@ object Dumper {
     progress.close()
 
     QueryHelper.closeScroll(scrollIds)
-
-    EsConnector.close()
   }
 
   fun performSearchRequest(searchRequest: ActionRequest, progress: ProgressBar): SearchResponse {
@@ -89,7 +97,53 @@ object Dumper {
 
   fun processHits(hits: Array<SearchHit>, progress: ProgressBar) {
     logger.info(hits.contentToString())
+
+    if (!EsDumpConfig.targetIndex.isNullOrBlank()) {
+      bulkToTarget(hits, EsDumpConfig.targetIndex, EsDumpConfig.targetType)
+    }
+
     progress.stepBy(hits.size.toLong())
+  }
+
+  val bulkListener = object: BulkProcessor.Listener {
+    override fun afterBulk(executionId: Long, request: BulkRequest?, response: BulkResponse?) {
+      // too bad
+      response?.items?.forEach {
+        if (it.isFailed) {
+          console.error("id [${it.id}] failed for executionId: $executionId")
+        }
+      }
+    }
+
+    override fun afterBulk(executionId: Long, request: BulkRequest?, failure: Throwable?) {
+      // too bad
+      console.error("Failed to execute bulk $failure for executionId: $executionId")
+    }
+
+    override fun beforeBulk(executionId: Long, request: BulkRequest?) {
+      // too bad
+    }
+  }
+
+  val bulkProcessor = BulkProcessor.builder(
+    { request, bulkListener -> EsConnector.client.bulkAsync(request, RequestOptions.DEFAULT, bulkListener) },
+    bulkListener)
+    .setBulkActions(EsDumpConfig.bulk_actions)
+    .setBulkSize(ByteSizeValue(EsDumpConfig.bulk_size_mb, ByteSizeUnit.MB))
+    .setFlushInterval(TimeValue.timeValueSeconds(EsDumpConfig.bulk_flush_sec))
+    .setConcurrentRequests(1)
+    .setBackoffPolicy(BackoffPolicy.exponentialBackoff(TimeValue.timeValueMillis(100), EsDumpConfig.bulk_retries))
+    .build()
+
+  fun bulkToTarget(hits: Array<SearchHit>, targetIndex: String, targetType: String?) {
+    for (searchHit in hits) {
+      val indexRequest = IndexRequest().index(targetIndex).id(searchHit.id)
+      if (targetType != null) {
+        indexRequest.type(targetType)
+      }
+      indexRequest.source(searchHit.sourceAsString, XContentType.JSON)
+      bulkProcessor.add(indexRequest)
+    }
   }
 
 }

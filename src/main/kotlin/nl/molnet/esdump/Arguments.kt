@@ -45,4 +45,11 @@ class Arguments(parser: ArgParser) {
             "-t", "--ttl",
             help = "ttl in minutes, default 1 min.").default("1")
 
+    val targetIndex by parser.storing(
+      "-d", "--targetindex",
+      help = "targetindex").default("")
+
+    val targetType by parser.storing(
+      "-y", "--targettype",
+      help = "targettype").default("_doc")
 }

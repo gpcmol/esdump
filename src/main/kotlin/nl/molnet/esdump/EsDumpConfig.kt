@@ -5,6 +5,11 @@ import org.elasticsearch.common.unit.TimeValue
 
 object EsDumpConfig {
 
+  val bulk_actions: Int = 1000
+  val bulk_size_mb: Long = 5
+  val bulk_flush_sec : Long = 15
+  val bulk_retries: Int = 5
+
   var schema = "http"
   var host = "localhost"
   var port: Int = 9200
@@ -15,8 +20,10 @@ object EsDumpConfig {
   var scrollSize: Int = 1000
   var scrollTtlMin = TimeValue.timeValueMinutes(1L)
   var fields: Array<String> = emptyArray()
+  var targetIndex = ""
+  var targetType = "_doc"
 
-  fun init(host: String?, port: String?, index: String?, slices: String?, file: String?, query: String?, scrollSize: String?, scrollTtlMin: String?, fields: String?) {
+  fun init(host: String?, port: String?, index: String?, slices: String?, file: String?, query: String?, scrollSize: String?, scrollTtlMin: String?, fields: String?, targetIndex: String?, targetType: String?) {
     if (!host.isNullOrBlank()) {
       this.host = host
     }
@@ -53,6 +60,14 @@ object EsDumpConfig {
       this.fields = fields.split(",").toTypedArray()
     } else {
       this.fields = Array(1) { "*" }
+    }
+
+    if (!targetIndex.isNullOrBlank()) {
+      this.targetIndex = targetIndex
+    }
+
+    if (!targetType.isNullOrBlank()) {
+      this.targetType = targetType
     }
   }
 
