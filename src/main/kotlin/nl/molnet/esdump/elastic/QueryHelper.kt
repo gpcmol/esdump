@@ -5,11 +5,12 @@ import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.core.CountRequest
 import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.builder.SearchSourceBuilder
-import org.tinylog.kotlin.Logger
 
 object QueryHelper {
+  const val MATCH_ALL_QUERY = "{\"match_all\":{}}"
 
   fun countQuery(index: String, query: String?): Long {
+    val query = query ?: MATCH_ALL_QUERY
     val queryBuilder = queryFromString(query)
 
     val countRequest = CountRequest()
@@ -21,8 +22,7 @@ object QueryHelper {
   }
 
   fun queryFromString(query: String?): SearchSourceBuilder {
-    //val query = query ?: "{\"match_all\":{}}"
-    val query = "{\"match_all\":{}}"
+    val query = query ?: MATCH_ALL_QUERY
     return SearchSourceBuilder().query(
       QueryBuilders.wrapperQuery(query)
     )

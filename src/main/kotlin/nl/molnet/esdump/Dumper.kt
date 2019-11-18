@@ -19,7 +19,7 @@ object Dumper {
   val logger = Logger.tag("FILE")
 
   fun pullData() {
-    val totalCount = QueryHelper.countQuery(EsDumpConfig.index, null) //EsDumpConfig.query
+    val totalCount = QueryHelper.countQuery(EsDumpConfig.index, EsDumpConfig.query)
     val progress = ProgressBar("Pull data", totalCount)
 
     val scrollIds: MutableSet<String> = mutableSetOf()

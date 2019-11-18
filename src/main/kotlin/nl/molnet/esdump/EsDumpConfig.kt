@@ -1,5 +1,6 @@
 package nl.molnet.esdump
 
+import nl.molnet.esdump.elastic.QueryHelper
 import org.elasticsearch.common.unit.TimeValue
 
 object EsDumpConfig {
@@ -9,7 +10,7 @@ object EsDumpConfig {
   var port: Int = 9200
   var index = ""
   var slices: Int = 2
-  var query = "{\"match_all\":{}}"
+  var query = QueryHelper.MATCH_ALL_QUERY
   var file = "/tmp/out.json"
   var scrollSize: Int = 1000
   var scrollTtlMin = TimeValue.timeValueMinutes(1L)

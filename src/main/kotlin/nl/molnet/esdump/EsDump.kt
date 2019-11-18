@@ -6,6 +6,7 @@ import nl.molnet.esdump.elastic.EsConnector
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.status.StatusLogger
 import org.tinylog.kotlin.Logger
+import kotlin.system.exitProcess
 
 fun main(args: Array<String>) = mainBody {
 
@@ -30,9 +31,10 @@ fun main(args: Array<String>) = mainBody {
     try {
       Dumper.pullData()
     } catch (e: Exception) {
-      logger.error("error connecting to Elasticsearch " + e.stackTrace)
+      logger.error("error connecting to Elasticsearch " + e.message)
     } finally {
       EsConnector.close()
+      exitProcess(0)
     }
 
     return@run

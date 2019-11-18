@@ -16,12 +16,12 @@ OPTIONS:
    --slices, -s "2"             Number of slices, same as number of shards, default 2
    --file, -f                   Target file to dump the data into
    --outputfields, -o           Fields to be outputted
-   --query, -q                  Custom query, defaults to match all
+   --query, -q                  Custom query, defaults to match all, omit query, e.g. --query='{\"match_all\":{}}'
    --window, -w "1000"          Batch size, default 1000
    --ttl, t                     Time to live for scroll, default 1 minute
 ```
 
 Dumping two indexes to a directory:
 ```
-./esdump  --url=localhost --port=9200 --index=documents --slices=2 --file=/home/ubuntu/dump.json --query='{"match_all":{}}' --fds=* --window=1000 --ttl=1
+./esdump --url=localhost --port=9200 --index=companydatabase --slices=5 --file=/tmp/dump2.json --query='{\"match_all\":{}}' --outputfields=Salary,Gender --window=10000 --ttl=1
 ```
