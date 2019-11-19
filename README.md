@@ -14,15 +14,15 @@ OPTIONS:
    --port, -p "9200"            Elastic search port, default 9200
    --index, -i "documents"      Index to dump, mandatory
    --slices, -s "2"             Number of slices, same as number of shards, default 2
-   --file, -f                   Target file to dump the data into
-   --outputfields, -o           Fields to be outputted
+   --file, -f                   Target file to dump the data into, optional
+   --outputfields, -o           Fields to be outputted, default *
    --query, -q                  Custom query, defaults to match all, omit query, e.g. --query='{\"match_all\":{}}'
    --window, -w "1000"          Batch size, default 1000
    --ttl, t                     Time to live for scroll, default 1 minute
    --targethost                 Elastic search target host, default localhost
    --targetport                 Elastic search target port, default 9200
    --targetindex                Target index, optional
-   --targettype                 Target type (deprecated, optional), default _doc
+   --targettype                 Target type (deprecated), default _doc
 ```
 
 Dumping two indexes to a directory:
