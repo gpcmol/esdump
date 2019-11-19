@@ -57,6 +57,9 @@ object Dumper {
         .preference("_local")
 
       var searchResponse = performSearchRequest(searchRequest, progress)
+      if (searchResponse == null) {
+        return@forEach
+      }
       var scrollId = searchResponse.scrollId
       scrollIds.add(scrollId)
       var searchHits: Array<SearchHit> = searchResponse.hits.hits
@@ -67,6 +70,9 @@ object Dumper {
         scrollRequest.scroll(scroll)
 
         searchResponse = performSearchRequest(scrollRequest, progress)
+        if (searchResponse == null) {
+          break
+        }
         scrollId = searchResponse.scrollId
         scrollIds.add(scrollId)
         searchHits = searchResponse.hits.hits
@@ -78,21 +84,21 @@ object Dumper {
     QueryHelper.closeScroll(scrollIds)
   }
 
-  fun performSearchRequest(searchRequest: ActionRequest, progress: ProgressBar): SearchResponse {
-    var searchResponse = SearchResponse()
-
+  fun performSearchRequest(searchRequest: ActionRequest, progress: ProgressBar): SearchResponse? {
     when (searchRequest) {
       is SearchRequest -> {
-        searchResponse = EsConnector.client.search(searchRequest, RequestOptions.DEFAULT)
+        val searchResponse = EsConnector.client.search(searchRequest, RequestOptions.DEFAULT)
+        processHits(searchResponse.hits.hits, progress)
+        return searchResponse
       }
       is SearchScrollRequest -> {
-        searchResponse = EsConnector.client.scroll(searchRequest, RequestOptions.DEFAULT)
+        val searchResponse = EsConnector.client.scroll(searchRequest, RequestOptions.DEFAULT)
+        processHits(searchResponse.hits.hits, progress)
+        return searchResponse
       }
     }
 
-    processHits(searchResponse.hits.hits, progress)
-
-    return searchResponse
+    return null
   }
 
   fun processHits(hits: Array<SearchHit>, progress: ProgressBar) {
