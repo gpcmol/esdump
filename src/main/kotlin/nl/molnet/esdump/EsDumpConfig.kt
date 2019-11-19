@@ -16,7 +16,7 @@ object EsDumpConfig {
   var index = ""
   var slices: Int = 2
   var query = QueryHelper.MATCH_ALL_QUERY
-  var file = "/tmp/out.json"
+  var file = ""
   var scrollSize: Int = 1000
   var scrollTtlMin = TimeValue.timeValueMinutes(1L)
   var fields: Array<String> = emptyArray()

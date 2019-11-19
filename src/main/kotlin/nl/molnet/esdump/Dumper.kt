@@ -102,7 +102,9 @@ object Dumper {
   }
 
   fun processHits(hits: Array<SearchHit>, progress: ProgressBar) {
-    logger.info(hits.contentToString())
+    if (!EsDumpConfig.file.isNullOrBlank()) {
+      logger.info(hits.contentToString())
+    }
 
     if (!EsDumpConfig.targetIndex.isNullOrBlank()) {
       bulkToTarget(hits, EsDumpConfig.targetIndex, EsDumpConfig.targetType)
