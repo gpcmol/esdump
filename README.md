@@ -25,7 +25,12 @@ OPTIONS:
    --targettype                 Target type (deprecated), default _doc
 ```
 
-Dumping two indexes to a directory:
+Dumping an index to a file to disk:
 ```
-./esdump --url=localhost --port=9200 --index=companydatabase --slices=5 --file=/tmp/dump2.json --query='{\"match_all\":{}}' --outputfields=Salary,Gender --window=10000 --ttl=1 --targethost=127.0.0.1 --targetindex=dumpindex
+./esdump --url=localhost --port=9200 --index=companydatabase --slices=5 --file=/tmp/dump2.json --query='{\"match_all\":{}}' --outputfields=Salary,Gender --window=1000 --ttl=1
+```
+
+Dumping an index to a remote index:
+```
+./esdump --url=localhost --port=9200 --index=companydatabase --slices=5 --query='{\"match_all\":{}}' --window=1000 --ttl=1 --targethost=127.0.0.1 --targetindex=dumpindex
 ```

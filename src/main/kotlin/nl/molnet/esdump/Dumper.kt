@@ -118,7 +118,7 @@ object Dumper {
       // too bad
       response?.items?.forEach {
         if (it.isFailed) {
-          console.error("id [${it.id}] failed for executionId: $executionId")
+          console.error("id [${it.id}] failed for executionId: $executionId, error: ${it.failureMessage}")
         }
       }
     }

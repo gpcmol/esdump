@@ -27,7 +27,7 @@ class Arguments(parser: ArgParser) {
 
   val file by parser.storing(
     "-f", "--file",
-    help = "file").default("/tmp/out.json")
+    help = "file").default("")
 
   val query by parser.storing(
     "-q", "--query",
